@@ -3,6 +3,12 @@
 Collect coins, avoid drones, and survive a 45-second round. Move with arrow keys or WASD;
 press R to restart. This is deliberately small so you can add features during the lab.
 
+Coin pickups play a rising chime; game over plays a descending tone. Click or press a
+key to enable audio. Use the Mute / Unmute button to toggle all effects, including
+across round restarts. Effects use the Web Audio API and require no audio assets.
+
+Run the audio regression tests with Node.js: `node --test sounds.test.cjs`.
+
 **Play it here:** https://www.avivz.net/coin-dash/
 
 ## Run it locally
