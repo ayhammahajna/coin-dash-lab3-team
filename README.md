@@ -1,7 +1,8 @@
 # Coin Dash — Lab 3 starter
 
 Collect coins, avoid drones, and survive a 45-second round. Move with arrow keys or WASD;
-press R to restart. This is deliberately small so you can add features during the lab.
+press P to pause or resume, and R to restart. Pausing freezes movement, drones, and the
+round timer. This is deliberately small so you can add features during the lab.
 
 **Play it here:** https://www.avivz.net/coin-dash/
 
@@ -11,6 +12,9 @@ Clone the repository and open `index.html` in a browser. Everything is in the re
 there is no package to install, no build step, no backend, and nothing is fetched from the network.
 If your agent prefers a local server, let it serve this folder, for example with
 `python3 -m http.server 8000`, and open `http://localhost:8000`.
+
+Open `tests/pause.html` in a browser to run the pause and gameplay regression checks.
+The page displays PASS or the first failed check.
 
 ## Use it in the lab
 

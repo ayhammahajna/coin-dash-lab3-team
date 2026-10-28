@@ -1,0 +1,93 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Coin Dash pause regression tests</title>
+<div id="game"></div><pre id="results">RUNNING</pre>
+<script src="../vendor/phaser-3.90.0.min.js"></script>
+<script src="../settings.js"></script>
+<script src="../game.js"></script>
+<script>
+(async () => {
+  const results = document.querySelector('#results');
+  // Explicit frames also run reliably under Chrome's headless virtual clock.
+  const wait = async ms => {
+    for (let elapsed = 0; elapsed < ms; elapsed += 16) {
+      await new Promise(resolve => setTimeout(resolve, 16));
+      window.coinDashGame.step(performance.now(), 16);
+    }
+  };
+  const check = (condition, message) => {
+    if (!condition) throw new Error(message);
+  };
+  const keyEvent = (type, key, repeat = false) => {
+    const code = key.charCodeAt(0);
+    window.dispatchEvent(new KeyboardEvent(type, { key, code: `Key${key}`, keyCode: code, which: code, repeat }));
+  };
+  const press = (key, repeat = false) => {
+    keyEvent('keydown', key, repeat);
+    keyEvent('keyup', key);
+  };
+  const positions = scene => JSON.stringify([scene.player, ...scene.drones.getChildren()].map(body => [body.x, body.y]));
+  try {
+    while (!window.coinDashGame.scene.isActive('CoinDash')) await wait(20);
+    const scene = window.coinDashGame.scene.getScene('CoinDash');
+    // Keep drones away from the player while checking the timer and input.
+    scene.drones.getChildren().forEach(drone => drone.setPosition(drone.x, 80));
+    scene.player.body.setVelocity(80, 0);
+    keyEvent('keydown', 'P');
+    await wait(100);
+    check(scene.paused && scene.physics.world.isPaused && scene.pauseMessage.visible, 'P pauses physics and displays PAUSED');
+    const frozenPositions = positions(scene);
+    const frozenHud = scene.hud.text;
+    const remaining = scene.deadline - scene.pausedAt;
+    keyEvent('keydown', 'P', true);
+    await wait(32);
+    keyEvent('keydown', 'P');
+    await wait(1200);
+    check(scene.paused, 'Holding P must not repeatedly toggle');
+    check(positions(scene) === frozenPositions, 'Player and drones stay frozen');
+    check(scene.hud.text === frozenHud, 'Timer display stays frozen');
+    keyEvent('keyup', 'P');
+    await wait(32);
+    press('P');
+    await wait(30);
+    check(!scene.paused && !scene.physics.world.isPaused && !scene.pauseMessage.visible, 'P resumes physics and hides PAUSED');
+    check(Math.abs(scene.deadline - scene.time.now - remaining) < 50, 'Paused time is excluded from the deadline');
+    await wait(100);
+    check(positions(scene) !== frozenPositions, 'Drones move again');
+    const playerX = scene.player.x;
+    scene.keys.D.isDown = true;
+    await wait(100);
+    scene.keys.D.isDown = false;
+    check(scene.player.x > playerX, 'Movement still works after resume');
+    scene.coin.body.reset(scene.player.x, scene.player.y);
+    await wait(100);
+    check(scene.score === 1, 'Coin collection still works');
+    press('P');
+    await wait(30);
+    press('R');
+    await wait(100);
+    check(!scene.paused && !scene.finished && !scene.physics.world.isPaused && scene.score === 0, 'R restarts a paused round');
+    press('P');
+    await wait(50);
+    check(scene.paused, 'P toggles once after restart');
+    press('P');
+    await wait(30);
+    scene.deadline = scene.time.now;
+    await wait(100);
+    check(scene.finished && scene.physics.world.isPaused, 'Timer expiration still ends the round');
+    press('P');
+    await wait(50);
+    check(scene.finished && !scene.paused && scene.physics.world.isPaused, 'P cannot resume a finished round');
+    press('R');
+    await wait(100);
+    scene.drones.getChildren()[0].body.reset(scene.player.x, scene.player.y);
+    await wait(32);
+    check(scene.finished && scene.physics.world.isPaused, 'Drone game-over still works');
+    results.textContent = 'PASS: pause/resume, frozen player/drones/timer, key repeat, scoring, restart, timeout, game-over';
+  } catch (error) {
+    results.textContent = `FAIL: ${error.message}`;
+  } finally {
+    window.coinDashGame.destroy(true);
+  }
+})();
+</script>
