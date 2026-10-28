@@ -2,15 +2,23 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Coin Dash — Lab 3 starter</title>
+<meta name="theme-color" content="#080b19">
+<title>Coin Dash — Neon Arcade</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <main>
-  <header><p>LAB 3 · STARTER GAME</p><h1>Coin Dash</h1>
-  <p>Collect yellow coins. Dodge red drones. How many can you collect in 45 seconds?</p></header>
-  <div id="game" aria-label="Coin Dash game. Move with arrow keys or WASD."></div>
-  <p>Move: <strong>arrow keys / WASD</strong> · Restart: <strong>R</strong></p>
+  <header>
+    <div class="eyebrow"><span class="status-dot"></span> THE NEON ARCADE <span class="edition">NO. 001 / COIN DASH</span></div>
+    <div class="title-row"><h1>COIN<span>DASH</span><span class="title-dot">.</span></h1><div class="round-badge">45 SEC<small>ONE SHOT. MAKE IT COUNT.</small></div></div>
+    <p class="intro">Chase the gold. Dodge the drones. <span>Own the grid.</span></p>
+  </header>
+  <section class="arcade" aria-label="Game arena">
+    <div class="arena-bar"><span><span class="status-dot"></span> GRID / 01</span><span>COLLECT · EVADE · REPEAT</span></div>
+    <div id="game" aria-label="Coin Dash game. Move with arrow keys or WASD. Press R to restart."></div>
+    <div class="legend" aria-label="Game pieces"><span><i class="piece player"></i> YOU</span><span><i class="piece coin"></i> COLLECT</span><span><i class="piece drone"></i> AVOID</span><span class="legend-note">STAY SHARP.</span></div>
+  </section>
+  <footer><div class="controls"><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> <span class="or">/</span> <kbd>↑</kbd><kbd>←</kbd><kbd>↓</kbd><kbd>→</kbd> <span class="control-label">MOVE</span></span><span><kbd>R</kbd> <span class="control-label">RESTART</span></span></div><p>Every coin counts.</p></footer>
 </main>
 <script src="vendor/phaser-3.90.0.min.js"></script>
 <script src="settings.js"></script><script src="game.js"></script>
