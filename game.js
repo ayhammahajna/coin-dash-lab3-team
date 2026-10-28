@@ -38,7 +38,9 @@ class CoinDash extends Phaser.Scene {
     });
     this.physics.add.overlap(this.player, this.drones, () => this.finish('A drone caught you!'));
     this.cursors = this.input.keyboard.createCursorKeys();
-    this.keys = this.input.keyboard.addKeys('W,A,S,D,R');
+    // Track P's down/up state so a held key can only toggle once, even when
+    // repeated keydown events arrive without the browser's repeat flag.
+    this.keys = this.input.keyboard.addKeys('W,A,S,D,R,P');
     const restart = () => this.scene.restart();
     const pause = (event) => {
       if (!event.repeat) this.togglePause();

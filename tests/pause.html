@@ -18,10 +18,13 @@
   const check = (condition, message) => {
     if (!condition) throw new Error(message);
   };
-  const press = (key, repeat = false) => {
+  const keyEvent = (type, key, repeat = false) => {
     const code = key.charCodeAt(0);
-    window.dispatchEvent(new KeyboardEvent('keydown', { key, code: `Key${key}`, keyCode: code, which: code, repeat }));
-    window.dispatchEvent(new KeyboardEvent('keyup', { key, code: `Key${key}`, keyCode: code, which: code }));
+    window.dispatchEvent(new KeyboardEvent(type, { key, code: `Key${key}`, keyCode: code, which: code, repeat }));
+  };
+  const press = (key, repeat = false) => {
+    keyEvent('keydown', key, repeat);
+    keyEvent('keyup', key);
   };
   const positions = scene => JSON.stringify([scene.player, ...scene.drones.getChildren()].map(body => [body.x, body.y]));
   try {
@@ -30,17 +33,21 @@
     // Keep drones away from the player while checking the timer and input.
     scene.drones.getChildren().forEach(drone => drone.setPosition(drone.x, 80));
     scene.player.body.setVelocity(80, 0);
-    press('P');
+    keyEvent('keydown', 'P');
     await wait(100);
     check(scene.paused && scene.physics.world.isPaused && scene.pauseMessage.visible, 'P pauses physics and displays PAUSED');
     const frozenPositions = positions(scene);
     const frozenHud = scene.hud.text;
     const remaining = scene.deadline - scene.pausedAt;
-    press('P', true);
+    keyEvent('keydown', 'P', true);
+    await wait(32);
+    keyEvent('keydown', 'P');
     await wait(1200);
     check(scene.paused, 'Holding P must not repeatedly toggle');
     check(positions(scene) === frozenPositions, 'Player and drones stay frozen');
     check(scene.hud.text === frozenHud, 'Timer display stays frozen');
+    keyEvent('keyup', 'P');
+    await wait(32);
     press('P');
     await wait(30);
     check(!scene.paused && !scene.physics.world.isPaused && !scene.pauseMessage.visible, 'P resumes physics and hides PAUSED');
