@@ -1,9 +1,10 @@
 <!doctype html>
 <meta charset="utf-8">
 <title>Coin Dash pause regression tests</title>
-<div id="game"></div><pre id="results">RUNNING</pre>
+<button id="mute">Mute</button><div id="game"></div><pre id="results">RUNNING</pre>
 <script src="../vendor/phaser-3.90.0.min.js"></script>
 <script src="../settings.js"></script>
+<script src="../sounds.js"></script>
 <script src="../game.js"></script>
 <script>
 (async () => {
@@ -38,6 +39,7 @@
     check(scene.paused && scene.physics.world.isPaused && scene.pauseMessage.visible, 'P pauses physics and displays PAUSED');
     const frozenPositions = positions(scene);
     const frozenHud = scene.hud.text;
+    const frozenTimer = scene.timer.text;
     const remaining = scene.deadline - scene.pausedAt;
     keyEvent('keydown', 'P', true);
     await wait(32);
@@ -45,7 +47,7 @@
     await wait(1200);
     check(scene.paused, 'Holding P must not repeatedly toggle');
     check(positions(scene) === frozenPositions, 'Player and drones stay frozen');
-    check(scene.hud.text === frozenHud, 'Timer display stays frozen');
+    check(scene.hud.text === frozenHud && scene.timer.text === frozenTimer, 'HUD and timer displays stay frozen');
     keyEvent('keyup', 'P');
     await wait(32);
     press('P');

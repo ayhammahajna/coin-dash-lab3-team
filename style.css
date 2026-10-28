@@ -48,3 +48,6 @@ footer p { color: #77839f; font-size: 10px; }
   kbd { width: 20px; height: 24px; }
   footer p { display: none; }
 }
+button { margin: 0 0 12px; padding: 8px 16px; border: 1px solid #71e8ce; border-radius: 6px; background: #101c31; color: #e5edf7; font: inherit; cursor: pointer; }
+button:hover { background: #24334b; }
+button:focus-visible { outline: 3px solid #ffd166; outline-offset: 3px; }

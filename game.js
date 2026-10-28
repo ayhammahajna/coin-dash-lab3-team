@@ -1,4 +1,4 @@
-/* global Phaser, COIN_DASH */
+/* global Phaser, COIN_DASH, coinDashSounds */
 class CoinDash extends Phaser.Scene {
   constructor() { super('CoinDash'); }
 
@@ -54,6 +54,7 @@ class CoinDash extends Phaser.Scene {
           // The record still lasts until the page is closed or refreshed.
         }
       }
+      coinDashSounds.coin();
       this.placeCoin();
     });
     this.physics.add.overlap(this.player, this.drones, () => this.finish('A drone caught you!'));
@@ -115,6 +116,7 @@ class CoinDash extends Phaser.Scene {
   finish(reason) {
     if (this.finished || this.paused) return;
     this.finished = true;
+    coinDashSounds.gameOver();
     this.physics.pause();
     const c = COIN_DASH;
     this.add.rectangle(c.width / 2, c.height / 2, 460, 150, 0x10182d, 0.97).setStrokeStyle(1, 0x53ffe1, 0.7);

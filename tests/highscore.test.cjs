@@ -6,7 +6,7 @@ const vm = require('node:vm');
 // Run the actual scene and coin overlap callback with lightweight Phaser stubs.
 function loadGame(storage) {
   const context = vm.createContext({
-    window: {}, localStorage: storage,
+    window: {}, localStorage: storage, coinDashSounds: { coin() {} },
     Phaser: {
       Scene: class {}, Game: class {}, Scale: {},
       Math: { Vector2: class {
@@ -20,8 +20,9 @@ function loadGame(storage) {
   vm.runInContext(fs.readFileSync(require.resolve('../game.js'), 'utf8'), context);
   return () => {
     const scene = vm.runInContext('new CoinDash()', context);
-    const shape = () => ({ body: { setCollideWorldBounds() {}, setCircle() {} } });
+    const shape = () => ({ setOrigin() { return this; }, body: { setCollideWorldBounds() {}, setCircle() {} } });
     scene.time = { now: 0 };
+    scene.events = { once() {} };
     scene.physics = {
       world: { setBounds() {} },
       add: { existing() {}, group() {}, overlap(player, target, callback) {
@@ -30,7 +31,7 @@ function loadGame(storage) {
     };
     scene.add = {
       grid() {}, rectangle: shape, circle: shape,
-      text: () => ({ setText(value) { scene.hudText = value; } })
+      text: () => ({ setOrigin() { return this; }, setDepth() { return this; }, setVisible() { return this; }, setText(value) { this.text = value; } })
     };
     scene.input = { keyboard: {
       createCursorKeys() {}, addKeys() {}, on() {}
@@ -91,5 +92,6 @@ test('HUD displays the current record', () => {
   scene.keys = Object.fromEntries(['W', 'A', 'S', 'D'].map(k => [k, {}]));
   scene.player.body.setVelocity = () => {};
   scene.update();
-  assert.match(scene.hudText, /Coins: 0\s+High score: 7\s+Time: 45s/);
+  assert.match(scene.hud.text, /COINS \/ 00\s+HIGH SCORE \/ 7/);
+  assert.equal(scene.timer.text, 'TIME / 45s');
 });
